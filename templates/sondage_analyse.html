@@ -1,0 +1,295 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse du sondage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f39c12;
+            --positive-color: #2ecc71;
+            --negative-color: #e74c3c;
+            --background-color: #f4f7f9;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #e0e0e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .title {
+            font-size: 2rem;
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--card-bg);
+            appearance: none;
+            font-size: 1rem;
+        }
+
+        .select-wrapper::after {
+            content: '\25BC';
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        .button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #3a7bd5;
+        }
+
+        .results {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 2rem;
+        }
+
+        .responses {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 0px !important;
+        }
+
+        .response-list {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 0px !important;
+        }
+
+        .response-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .response-list.positive .response-title {
+            color: var(--positive-color);
+        }
+
+        .response-list.negative .response-title {
+            color: var(--negative-color);
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0px !important;
+        }
+
+        li {
+            background-color: var(--background-color);
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-radius: 4px;
+            transition: transform 0.2s ease;
+        }
+
+        li:hover {
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .title {
+                font-size: 1.5rem;
+            }
+
+            .subtitle {
+                font-size: 1.2rem;
+            }
+
+            .chart-container {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">{{ sondage.titre }}</h1>
+
+        <form method="get" class="filters">
+            {% if sondage.active_sex_option %}
+            <div class="select-wrapper">
+                <select name="sex" class="select">
+                    <option value="">Tous les sexes</option>
+                    <option value="1">Masculin</option>
+                    <option value="2">Féminin</option>
+                </select>
+            </div>
+            {% endif %}
+
+            {% if sondage.tranche_age.exists %}
+            <div class="select-wrapper">
+                <select name="tranche_age" class="select">
+                    <option value="">Toutes les tranches d'âge</option>
+                    {% for tranche in sondage.tranche_age.all %}
+                    <option value="{{ tranche.id }}">{{ tranche.debut }} - {{ tranche.fin }} ans</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+
+            <div class="select-wrapper">
+                <select name="question" class="select">
+                    <option value="">Toutes les questions</option>
+                    {% for question in sondage.sondage_question.all %}
+                    <option value="{{ question.id }}">{{ question.question }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="button">Analyser</button>
+        </form>
+
+        <div class="results">
+            <h2 class="subtitle">Résultats de l'analyse</h2>
+
+            <div class="chart-container">
+                <canvas id="resultChart"></canvas>
+            </div>
+
+            <div class="responses">
+                <div class="response-list positive">
+                    <h3 class="response-title">Réponses positives</h3>
+                    {% if liste_positif %}
+                    <ul>
+                        {% for reponse in liste_positif %}
+                        <li>{{ reponse }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p>Aucune réponse positive</p>
+                    {% endif %}
+                </div>
+
+                <div class="response-list negative">
+                    <h3 class="response-title">Réponses négatives</h3>
+                    {% if liste_negatif %}
+                    <ul>
+                        {% for reponse in liste_negatif %}
+                        <li>{{ reponse }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p>Aucune réponse négative</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctx = document.getElementById('resultChart');
+            if (ctx) {
+                const resultChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Positives', 'Négatives'],
+                        datasets: [{
+                            label: 'Réponses',
+                            data: [{{ positif }}, {{ negatif }}],
+                            backgroundColor: ['#2ecc71', '#e74c3c'],
+                            borderColor: ['#27ae60', '#c0392b'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            } else {
+                console.error('Element canvas "resultChart" introuvable');
+            }
+        });
+    </script>
+</body>
+</html>
+
+{% endblock %}

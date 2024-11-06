@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard SondageAI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f39c12;
+            --bg-light: #f4f7f9;
+            --bg-dark: #2c3e50;
+            --text-light: #ffffff;
+            --text-dark: #333333;
+            --sidebar-width: 250px;
+            --header-height: 60px;
+        }
+
+        * {
+            margin: 0;
+            
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            padding: 1rem;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .sidebar a {
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            border-radius: 5px;
+            transition: background-color 0.2s ease;
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar a i {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .sidebar a:hover, .sidebar a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-toggler {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .main-content {
+           
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+
+        .header {
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: var(--sidebar-width);
+            z-index: 100;
+            transition: left 0.3s ease;
+        }
+
+        .header-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .user-menu {
+            position: relative;
+        }
+
+        .user-menu-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-size: 1rem;
+        }
+
+        .user-menu-button i {
+            margin-left: 0.5rem;
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+            z-index: 1000;
+        }
+
+        .user-dropdown.active {
+            display: block;
+        }
+
+        .user-dropdown a {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: background-color 0.2s ease;
+        }
+
+        .user-dropdown a:hover {
+            background-color: var(--bg-light);
+        }
+
+        .content {
+            margin-top: calc(var(--header-height) + 2rem);
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+        }
+
+        body.dark-mode .sidebar {
+            background-color: #34495e;
+        }
+
+        body.dark-mode .header {
+            background-color: #2c3e50;
+            color: var(--text-light);
+        }
+
+        body.dark-mode .user-dropdown {
+            background-color: #34495e;
+        }
+
+        body.dark-mode .user-dropdown a {
+            color: var(--text-light);
+        }
+
+        body.dark-mode .user-dropdown a:hover {
+            background-color: #2c3e50;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .header {
+                left: 0;
+            }
+
+            .sidebar-toggler {
+                display: block;
+                position: fixed;
+                top: 1rem;
+                left: 1rem;
+                z-index: 1001;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @media (min-width: 768px) {
+            .main-content {
+                margin-left: var(--sidebar-width);
+                padding: 2rem;
+                
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dark-mode-toggle {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <span class="sidebar-logo">Analyse</span>
+           
+        </div>
+        <a href="{% url 'index' %}" class="fade-in"><i class="fas fa-home"></i> Chat</a>
+        <a href="{% url 'sondage_create' %}" class="fade-in"><i class="fas fa-plus-circle"></i> Créer un Sondage</a>
+        <a href="{% url 'sondage_list' %}" class="fade-in"><i class="fas fa-chart-bar"></i> Mes sondages</a>
+        <details class="fade-in">
+            <summary> Profile</summary>
+            <a href="{% url 'change_username' %}"><i class="fas fa-user-edit"></i> Changer son nom</a>
+            <a href="{% url 'change_password' %}"><i class="fas fa-key"></i> Changer de mot de passe</a>
+            <a href="{% url 'suppresion_compte' %}"><i class="fas fa-user-times"></i> Supprimer son compte</a>
+        </details>
+        <a href="{% url 'home' %}" class="fade-in"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header class="header">
+            <button class="sidebar-toggler" style="color: black !important; margin:10px !important; margin-left:0px !important">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="header-title"></h1>
+            <div class="user-menu">
+                <button class="user-menu-button">
+                    <span>Compte</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="user-dropdown">
+                    <a href="{% url 'change_username' %}"><i class="fas fa-user-edit"></i> Changer son nom</a>
+                    <a href="{% url 'change_password' %}"><i class="fas fa-key"></i> Changer de mot de passe</a>
+                    <a href="{% url 'suppresion_compte' %}"><i class="fas fa-user-times"></i> Supprimer son compte</a>
+                    <a href="{% url 'home' %}"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="content">
+            {% block content %}
+            <!-- Le contenu spécifique à chaque page sera inséré ici -->
+            {% endblock %}
+        </div>
+    </div>
+
+    <script>
+        // Gestion du Toggler de la Sidebar
+        const sidebarTogglers = document.querySelectorAll('.sidebar-toggler');
+        const sidebar = document.querySelector('.sidebar');
+        const mainContent = document.querySelector('.main-content');
+        const header = document.querySelector('.header');
+
+        sidebarTogglers.forEach(toggler => {
+            toggler.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+                mainContent.style.marginLeft = sidebar.classList.contains('active') ? '0' : '250px';
+                header.style.left = sidebar.classList.contains('active') ? '0' : '250px';
+            });
+        });
+
+        // Gestion du menu utilisateur
+        const userMenuButton = document.querySelector('.user-menu-button');
+        const userDropdown = document.querySelector('.user-dropdown');
+
+        userMenuButton.addEventListener('click', () => {
+            userDropdown.classList.toggle('active');
+        });
+
+        // Fermer le menu utilisateur en cliquant en dehors
+        document.addEventListener('click', (event) => {
+            if (!userMenuButton.contains(event.target) && !userDropdown.contains(event.target)) {
+                userDropdown.classList.remove('active');
+            }
+        });
+
+        // Gestion du Dark Mode
+        const darkModeToggle = document.createElement('button');
+        darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        darkModeToggle.classList.add('dark-mode-toggle');
+        darkModeToggle.style.position = 'fixed';
+        darkModeToggle.style.bottom = '20px';
+        darkModeToggle.style.right = '20px';
+        darkModeToggle.style.background = 'var(--primary-color)';
+        darkModeToggle.style.color = 'white';
+        darkModeToggle.style.border = 'none';
+        darkModeToggle.style.borderRadius = '50%';
+        darkModeToggle.style.width = '50px';
+        darkModeToggle.style.height = '50px';
+        darkModeToggle.style.fontSize = '1.2rem';
+        darkModeToggle.style.cursor = 'pointer';
+        darkModeToggle.style.zIndex = '1000';
+
+        document.body.appendChild(darkModeToggle);
+
+        darkModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            darkModeToggle.innerHTML = document.body.classList.contains('dark-mode') ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        });
+
+        // Animation des éléments au chargement
+        window.addEventListener('load', () => {
+            const fadeElements = document.querySelectorAll('.fade-in');
+            fadeElements.forEach((element, index) => {
+                setTimeout(() => {
+                    element.style.opacity = '1';
+                }, 100 * index);
+            });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

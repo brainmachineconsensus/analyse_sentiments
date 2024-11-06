@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="title">{{ sondage.titre }}</h1>
+    <form method="post" id="sondageForm">
+        {% csrf_token %}
+
+        {% if sondage.active_sex_option %}
+        <div class="form-group animate-in">
+            <label for="sex">Sexe</label>
+            <select class="form-control" id="sex" name="sex" required>
+                <option value="" disabled selected>Choisissez le sexe</option>
+                <option value="1">Masculin</option>
+                <option value="2">Féminin</option>
+            </select>
+        </div>
+        {% endif %}
+
+        {% if sondage.tranche_age.exists %}
+        <div class="form-group animate-in">
+            <label for="tranche_age">Tranche d'âge</label>
+            <select class="form-control" id="tranche_age" name="tranche_age" required>
+                <option value="" disabled selected>Choisissez une tranche d'âge</option>
+                {% for tranche in sondage.tranche_age.all %}
+                <option value="{{ tranche.id }}">{{ tranche.debut }} - {{ tranche.fin }} ans</option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+
+        {% for categorie in sondage.sondage_categorie.all %}
+        <div class="form-group animate-in">
+            <label for="categorie_{{ categorie.id }}">{{ categorie.titre }}</label>
+            <select class="form-control" id="categorie_{{ categorie.id }}" name="categorie_{{ categorie.id }}">
+                {% for option in categorie.categorie_option.all %}
+                <option value="{{ option.id }}">{{ option.option }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endfor %}
+
+        {% for question in sondage.sondage_question.all %}
+        <div class="form-group animate-in">
+            <label for="question_{{ question.id }}">{{ question.question }}</label>
+            <textarea class="form-control" id="question_{{ question.id }}" name="question_{{ question.id }}" rows="3" required></textarea>
+        </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-primary">Soumettre</button>
+    </form>
+</div>
+
+<style>
+    :root {
+        --primary-color: #4a90e2;
+        --secondary-color: #f39c12;
+        --background-color: #f4f7f9;
+        --text-color: #333;
+        --card-bg: #ffffff;
+        --input-bg: #f8f9fa;
+        --input-border: #ced4da;
+        --input-focus: #80bdff;
+        --shadow-color: rgba(0, 0, 0, 0.1);
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        box-shadow: 0 4px 6px var(--shadow-color);
+    }
+
+    .title {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-bottom: 2rem;
+        text-align: center;
+        animation: fadeInDown 0.5s ease-out;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    .animate-in {
+        animation: fadeInUp 0.5s ease-out forwards;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--text-color);
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: var(--text-color);
+        background-color: var(--input-bg);
+        background-clip: padding-box;
+        border: 1px solid var(--input-border);
+        border-radius: 0.25rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    .form-control:focus {
+        color: var(--text-color);
+        background-color: var(--input-bg);
+        border-color: var(--input-focus);
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25);
+    }
+
+    select.form-control {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 12px;
+        padding-right: 2.5rem;
+    }
+
+    textarea.form-control {
+        resize: vertical;
+    }
+
+    .btn-primary {
+        color: #fff;
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        border-radius: 0.25rem;
+        transition: all 0.15s ease-in-out;
+        cursor: pointer;
+        display: block;
+        width: 100%;
+        margin-top: 2rem;
+    }
+
+    .btn-primary:hover {
+        background-color: #357ae8;
+        border-color: #357ae8;
+    }
+
+    .btn-primary:focus {
+        box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.5);
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 1rem;
+        }
+
+        .title {
+            font-size: 2rem;
+        }
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('sondageForm');
+    const formGroups = form.querySelectorAll('.form-group');
+
+    formGroups.forEach((group, index) => {
+        setTimeout(() => {
+            group.classList.add('animate-in');
+        }, index * 100);
+    });
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (validateForm()) {
+            animateSubmit();
+            setTimeout(() => {
+                form.submit();
+            }, 1000);
+        }
+    });
+
+    function validateForm() {
+        let isValid = true;
+        formGroups.forEach(group => {
+            const input = group.querySelector('input, select, textarea');
+            if (input.required && !input.value) {
+                isValid = false;
+                showError(input);
+            } else {
+                removeError(input);
+            }
+        });
+        return isValid;
+    }
+
+    function showError(input) {
+        input.classList.add('is-invalid');
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'invalid-feedback';
+        errorMessage.textContent = 'Ce champ est requis.';
+        input.parentNode.appendChild(errorMessage);
+    }
+
+    function removeError(input) {
+        input.classList.remove('is-invalid');
+        const errorMessage = input.parentNode.querySelector('.invalid-feedback');
+        if (errorMessage) {
+            errorMessage.remove();
+        }
+    }
+
+    function animateSubmit() {
+        const submitButton = form.querySelector('button[type="submit"]');
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
+        submitButton.disabled = true;
+    }
+
+
+    const inputs = form.querySelectorAll('.form-control');
+    inputs.forEach(input => {
+        input.addEventListener('focus', () => {
+            input.parentNode.classList.add('focused');
+        });
+        input.addEventListener('blur', () => {
+            if (!input.value) {
+                input.parentNode.classList.remove('focused');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

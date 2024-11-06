@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2 class="title">Vos Sondages</h2>
+    <div class="sondage-list" id="sondageList">
+        {% if sondages %}
+        {% for sondage in sondages %}
+            <div class="sondage-item" data-id="{{ sondage.id }}">
+                <div class="sondage-content">
+                    <h3 class="sondage-title">{{ sondage.titre }}</h3>
+                    <p class="sondage-date">{{ sondage.date }}</p>
+                </div>
+                <div class="sondage-actions">
+                    <a href="{% url 'reponse' sondage.id %}" class="btn-view">Formulaire de response</a>
+                    <a href="{% url 'sondage_analyse' sondage.id %}" class="btn-view">Analyser</a>
+                    <a href="{% url 'sondage_delete' sondage.id %}" class="btn-view"><button class="btn-delete">Supprimer</button></a>
+                </div>
+            </div>
+        {% endfor %}
+        {% else %}
+        <p class="sondage-date">Aucun sondage pour le moment</p>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-color: #4a90e2;
+        --secondary-color: #f39c12;
+        --background-color: #f4f7f9;
+        --text-color: #333;
+        --card-bg: #ffffff;
+        --shadow-color: rgba(0, 0, 0, 0.1);
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .title {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-bottom: 2rem;
+        text-align: center;
+        animation: fadeInDown 0.5s ease-out;
+    }
+
+    .sondage-list {
+        display: grid;
+        gap: 1.5rem;
+    }
+
+    .sondage-item {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        box-shadow: 0 4px 6px var(--shadow-color);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        animation: fadeInUp 0.5s ease-out;
+    }
+
+    .sondage-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px var(--shadow-color);
+    }
+
+    .sondage-content {
+        padding: 1.5rem;
+    }
+
+    .sondage-title {
+        font-size: 1.25rem;
+        margin: 0 0 0.5rem;
+        color: var(--primary-color);
+    }
+
+    .sondage-date {
+        font-size: 0.875rem;
+        color: #777;
+        margin: 0;
+    }
+
+    .sondage-actions {
+        display: flex;
+        justify-content: flex-end;
+        padding: 1rem 1.5rem;
+        background-color: #f8f9fa;
+        opacity: 0;
+        transform: translateY(100%);
+        transition: all 0.3s ease;
+    }
+
+    .sondage-item:hover .sondage-actions {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .btn-view, .btn-delete {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-view {
+        background-color: var(--primary-color);
+        color: white;
+        text-decoration: none;
+        margin-right: 0.5rem;
+    }
+
+    .btn-view:hover {
+        background-color: #3a7bd5;
+    }
+
+    .btn-delete {
+        background-color: #e74c3c;
+        color: white;
+    }
+
+    .btn-delete:hover {
+        background-color: #c0392b;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 0 0.5rem;
+        }
+
+        .title {
+            font-size: 2rem;
+        }
+
+        .sondage-item {
+            border-radius: 0;
+        }
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const sondageList = document.getElementById('sondageList');
+
+    sondageList.querySelectorAll('.sondage-item').forEach((item, index) => {
+        item.style.animationDelay = `${index * 0.1}s`;
+    });
+
+    sondageList.addEventListener('click', (e) => {
+        if (e.target.classList.contains('btn-delete')) {
+            const sondageItem = e.target.closest('.sondage-item');
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce sondage ?')) {
+                sondageItem.style.animation = 'fadeOutLeft 0.5s ease-out forwards';
+                setTimeout(() => {
+                    sondageItem.remove();
+                }, 500);
+            }
+        }
+    });
+
+    sondageList.querySelectorAll('.sondage-item').forEach(item => {
+        item.addEventListener('mouseenter', () => {
+            item.style.transform = 'translateY(-5px)';
+            item.style.boxShadow = '0 6px 12px rgba(0, 0, 0, 0.15)';
+        });
+
+        item.addEventListener('mouseleave', () => {
+            item.style.transform = 'translateY(0)';
+            item.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+        });
+    });
+});
+
+document.querySelector('style').textContent += `
+    @keyframes fadeOutLeft {
+        from {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateX(-100%);
+        }
+    }
+`;
+</script>
+{% endblock %}

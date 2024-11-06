@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SondageAI - Plateforme de sondage intelligente</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f39c12;
+            --text-color: #333;
+            --bg-color: #f4f7f9;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: var(--card-bg);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .cta-button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .cta-button:hover {
+            background-color: #3a7bd5;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #4a90e2 0%, #7f8c8d 100%);
+            color: white;
+            padding: 8rem 0 4rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 4rem 0;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-card i {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* How It Works Section */
+        .how-it-works {
+            background-color: var(--card-bg);
+            padding: 4rem 0;
+        }
+
+        .how-it-works h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .steps {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .step {
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .step-number {
+            background-color: var(--primary-color);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 1rem;
+            font-weight: bold;
+        }
+
+        /* AI Analysis Section */
+        .ai-analysis {
+            padding: 4rem 0;
+            background-color: #f0f4f8;
+        }
+
+        .ai-analysis h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .ai-analysis-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+
+        .ai-analysis-text {
+            flex: 1;
+        }
+
+        .ai-analysis-image {
+            flex: 1;
+            text-align: center;
+        }
+
+        .ai-analysis-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Data Visualization Section */
+        .data-visualization {
+            padding: 4rem 0;
+        }
+
+        .data-visualization h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .data-visualization-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+
+        .data-visualization-text {
+            flex: 1;
+        }
+
+        .data-visualization-image {
+            flex: 1;
+            text-align: center;
+        }
+
+        .data-visualization-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--text-color);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fadeInUp {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: var(--card-bg);
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .nav-links a {
+                padding: 0.5rem 0;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .feature-grid, .testimonial-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .steps {
+                flex-direction: column;
+            }
+
+            .ai-analysis-content, .data-visualization-content {
+                flex-direction: column;
+            }
+
+            .ai-analysis-image, .data-visualization-image {
+                order: -1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">SondageAI</div>
+            <button class="menu-toggle" aria-label="Toggle menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="nav-links">
+                <a href="#features">Fonctionnalités</a>
+                <a href="#how-it-works">Comment ça marche</a>
+                <a href="#ai-analysis">Analyse IA</a>
+                <a href="#data-visualization">Visualisation</a>
+                <a href="{% url 'index' %}" class="cta-button">Commencer</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1 class="animate-fadeInUp">Révolutionnez vos sondages avec l'IA</h1>
+                <p class="animate-fadeInUp">Créez, envoyez et analysez vos sondages en un clin d'œil grâce à notre plateforme alimentée par l'intelligence artificielle.</p>
+                <a href="{% url 'index' %}" class="cta-button animate-fadeInUp">Essayer gratuitement</a>
+            </div>
+        </section>
+
+        <section id="features" class="features">
+            <div class="container">
+                <h2>Fonctionnalités clés</h2>
+                <div class="feature-grid">
+                    <div class="feature-card animate-fadeInUp">
+                        <i class="fas fa-brain"></i>
+                        <h3>Analyse IA</h3>
+                        <p>Obtenez des insights profonds grâce à notre analyse de sentiment avancée.</p>
+                    </div>
+                    <div class="feature-card animate-fadeInUp">
+                        <i class="fas fa-chart-bar"></i>
+                        <h3>Visualisation des données</h3>
+                        <p>Des graphiques interactifs pour mieux comprendre vos résultats.</p>
+                    </div>
+                    <div class="feature-card animate-fadeInUp">
+                        <i class="fas fa-mobile-alt"></i>
+                        <h3>Responsive Design</h3>
+                        <p>Créez et répondez aux sondages sur n'importe quel appareil.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="how-it-works" class="how-it-works">
+            <div class="container">
+                <h2>Comment ça marche</h2>
+                <div class="steps">
+                    <div class="step animate-fadeInUp">
+                        <div class="step-number">1</div>
+                        <h3>Créez votre sondage</h3>
+                        <p>Utilisez notre interface intuitive pour concevoir votre sondage parfait.</p>
+                    </div>
+                    <div class="step animate-fadeInUp">
+                        <div class="step-number">2</div>
+                        <h3>Envoyez-le à vos clients</h3>
+                        <p>Partagez facilement votre sondage via email ou lien direct.</p>
+                    </div>
+                    <div class="step animate-fadeInUp">
+                        <div class="step-number">3</div>
+                        <h3>Analysez les résultats</h3>
+                        <p>Notre IA traite les réponses et vous fournit des insights précieux.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="ai-analysis" class="ai-analysis">
+            <div class="container">
+                <h2>Analyse IA avancée</h2>
+                <div class="ai-analysis-content">
+                    <div class="ai-analysis-text">
+                        <h3>Découvrez des insights cachés</h3>
+                        <p>Notre technologie d'intelligence artificielle analyse en profondeur les réponses de vos sondages pour révéler des tendances, des sentiments et des corrélations que vous n'auriez peut-être pas remarqués autrement.</p>
+                        <p>Grâce à l'apprentissage automatique, notre système s'améliore continuellement, offrant des analyses de plus en plus précises et pertinentes au fil du temps.</p>
+                    </div>
+                    <div class="ai-analysis-image">
+                        <img src="https://media.istockphoto.com/id/1387900612/photo/automation-data-analytic-with-robot-and-digital-visualization-for-big-data-scientist.jpg?s=612x612&w=0&k=20&c=50maOJU6CpVC55mYnUqtff2aiaJZ7KlmMn4jNhWD_eo=" alt="Analyse IA des sondages" width="400" height="300">
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="data-visualization" class="data-visualization">
+            <div class="container">
+                <h2>Visualisation des données intuitive</h2>
+                <div class="data-visualization-content">
+                    <div class="data-visualization-image">
+                        <img src="https://media.istockphoto.com/id/1321462048/photo/digital-transformation-concept-system-engineering-binary-code-programming.jpg?s=612x612&w=0&k=20&c=Ib8RLw3_eCOo9N3YE4pvp9rcb_WmirjS-9x9R-vTd68=" alt="Visualisation des données de sondage" width="400" height="300">
+                    </div>
+                    <div class="data-visualization-text">
+                        <h3>Transformez vos données en insights actionnables</h3>
+                        <p>Nos outils de visualisation de données transforment les résultats bruts de vos sondages en graphiques clairs et interactifs. Comprenez rapidement les tendances, comparez les résultats et prenez des décisions éclairées basées sur des données concrètes.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="#">À propos</a>
+                <a href="#">Contact</a>
+                <a href="#">Confidentialité</a>
+                <a href="#">Conditions d'utilisation</a>
+            </div>
+            
+        </div>
+    </footer>
+
+    <script>
+        // Menu toggle pour mobile
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Animation au défilement
+        function animateOnScroll() {
+            const elements = document.querySelectorAll('.animate-fadeInUp');
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                if (elementTop < windowHeight - 100) {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }
+            });
+        }
+
+        window.addEventListener('scroll', animateOnScroll);
+        window.addEventListener('load', animateOnScroll);
+    </script>
+</body>
+</html>

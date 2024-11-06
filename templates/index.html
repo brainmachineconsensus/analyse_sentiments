@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="chat-container">
+   
+
+    <!-- Boîte de Chat -->
+    <div class="chat-box" id="chatBox" style="margin-top: 50px;">
+        <!-- Messages affichés dynamiquement -->
+        {% if result %}
+        <div class="chat-message bot">
+            <div class="message-content">
+                <p><strong>Analyse :</strong> {{ result }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Formulaire d'Entrée -->
+    <form method="POST" class="chat-input-form">
+        {% csrf_token %}
+        <div class="input-group">
+            <textarea 
+                name="texte" 
+                id="userInput" 
+                rows="1" 
+                class="form-control" 
+                placeholder="Écrivez votre message..." 
+                required></textarea>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Styles Modernisés et Mobile-Friendly -->
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Poppins', sans-serif;
+        background-color: #f1f3f4;
+        height: 100vh !important;
+    }
+
+    .chat-container {
+        display: flex;
+        flex-direction: column;
+        height: 85vh;
+        max-width: 600px;
+        margin: auto;
+        background-color: white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .chat-header {
+        background-color: #0d6efd;
+        color: white;
+        text-align: center;
+        padding: 15px;
+    }
+
+    .chat-box {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+        background-color: #f8f9fa;
+        scroll-behavior: smooth;
+    }
+
+    .chat-message {
+        display: flex;
+        margin-bottom: 10px;
+    }
+
+    .chat-message.bot {
+        justify-content: flex-start;
+    }
+
+    .chat-message.user {
+        justify-content: flex-end;
+    }
+
+    .message-content {
+        max-width: 75%;
+        padding: 10px 15px;
+        border-radius: 20px;
+        background-color: #e9ecef;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .chat-message.user .message-content {
+        background-color: #0d6efd;
+        color: white;
+    }
+
+    .input-group {
+        display: flex;
+        padding: 10px;
+        background-color: #fff;
+        border-top: 1px solid #ddd;
+    }
+
+    .form-control {
+        flex: 1;
+        border-radius: 20px;
+        border: 1px solid #ddd;
+        padding: 10px 15px;
+        resize: none;
+        transition: border-color 0.3s ease-in-out;
+    }
+
+    .form-control:focus {
+        border-color: #0d6efd;
+        outline: none;
+    }
+
+    button {
+        margin-left: 10px;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    @keyframes fadeIn {
+        0% { opacity: 0; transform: translateY(10px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Scroll et gestion de l'affichage mobile */
+    .chat-box::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    .chat-box::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+    }
+
+    @media (max-width: 768px) {
+        .chat-container {
+            height: 80vh;
+            border-radius: 0;
+            position:fixed;
+            width: 100% !important;
+            
+        }
+
+        .input-group {
+            margin-bottom: 0px !important;
+        }
+
+        .message-content {
+            max-width: 85%;
+        }
+    }
+</style>
+
+<!-- Script JS -->
+<script>
+    document.querySelector('.chat-input-form').addEventListener('submit', function(e) {
+        e.preventDefault(); // Empêche le rechargement de la page
+
+        const userInput = document.getElementById('userInput').value.trim();
+        if (userInput === "") return;
+
+        // Ajouter le message de l'utilisateur dans le chat
+        addMessage(userInput, 'user');
+
+        // Envoyer le texte au serveur avec POST (soumission classique)
+        this.submit();
+    });
+
+    function addMessage(text, sender) {
+        const chatBox = document.getElementById('chatBox');
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('chat-message', sender);
+
+        const messageContent = document.createElement('div');
+        messageContent.classList.add('message-content');
+        messageContent.innerHTML = `<p><strong>${sender === 'user' ? 'Vous' : 'Bot'} :</strong> ${text}</p>`;
+        
+        messageDiv.appendChild(messageContent);
+        chatBox.appendChild(messageDiv);
+
+        // Scroller vers le bas automatiquement
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+</script>
+{% endblock %}
